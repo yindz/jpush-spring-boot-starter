@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 自动配置类
  *
- * @author yinzl
+ * @author yin
  */
 @Configuration
 @ConditionalOnProperty(prefix = "jpush", name = "app-key")
