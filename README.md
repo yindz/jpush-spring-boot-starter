@@ -3,22 +3,13 @@
 包含极光推送工具服务端SDK一些常用的配置和逻辑。可直接快速集成到您的 SpringBoot 项目中。
 
 ## 引入
-### 配置仓库
-暂时尚未进入maven中央仓库，因此请在 pom.xml 中配置一个仓库地址：
-```xml
-<repositories>
-    <repository>
-        <id>apifan-repo</id>
-        <name>apifan-repo</name>
-        <url>http://118.31.70.236:8004/nexus/content/repositories/biz-repo/</url>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-    </repository>
-</repositories>
-```
 ### 添加依赖
+暂时尚未进入maven中央仓库，因此请安装到本地仓库目录：
 ```
+mvn install
+```
+引入依赖：
+```xml
 <dependency>
     <groupId>com.apifan.framework</groupId>
     <artifactId>jpush-spring-boot-starter</artifactId>
