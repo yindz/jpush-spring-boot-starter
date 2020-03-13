@@ -60,17 +60,6 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>biz-repo</id>
-            <name>biz-repo</name>
-            <url>http://118.31.70.236:8004/nexus/content/repositories/biz-repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>
