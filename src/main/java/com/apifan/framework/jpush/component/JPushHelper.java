@@ -63,7 +63,7 @@ public class JPushHelper {
                         jPushProperties.getProxyPort(), jPushProperties.getProxyUsername());
             } else {
                 proxy = new HttpProxy(StringUtils.trim(jPushProperties.getProxyHost()), jPushProperties.getProxyPort());
-                logger.info("JPushClient将使用匿名代理服务器，host={}, port={}", jPushProperties.getProxyHost(), jPushProperties.getProxyPort());
+                logger.info("JPushClient将使用开放式代理服务器，host={}, port={}", jPushProperties.getProxyHost(), jPushProperties.getProxyPort());
             }
         }
         jPushClient = new JPushClient(jPushProperties.getMasterSecret(), jPushProperties.getAppKey(), proxy, clientConfig);
@@ -83,15 +83,7 @@ public class JPushHelper {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(deviceIdList), "设备ID为空");
         Preconditions.checkArgument(deviceIdList.size() <= 1000, "设备ID不超过1000个");
         Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        PushPayload payload = PushPayload.newBuilder()
-                .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(deviceIdList))
-                .setOptions(Options.newBuilder().setApnsProduction(true).build())
-                .setNotification(Notification.newBuilder().setAlert(content)
-                        .addPlatformNotification(IosNotification.newBuilder().setSound("default").setBadge(1).addExtras(extras).build())
-                        .addPlatformNotification(AndroidNotification.newBuilder().setBuilderId(1).addExtras(extras).build()).build()
-                ).build();
-        return push(payload);
+        return push(createPushPayload(content, Audience.registrationId(deviceIdList), extras));
     }
 
     /**
@@ -106,15 +98,7 @@ public class JPushHelper {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(aliasList), "别名为空");
         Preconditions.checkArgument(aliasList.size() <= 1000, "别名不超过1000个");
         Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        PushPayload payload = PushPayload.newBuilder()
-                .setPlatform(Platform.all())
-                .setAudience(Audience.alias(aliasList))
-                .setOptions(Options.newBuilder().setApnsProduction(true).build())
-                .setNotification(Notification.newBuilder().setAlert(content)
-                        .addPlatformNotification(IosNotification.newBuilder().setSound("default").setBadge(1).addExtras(extras).build())
-                        .addPlatformNotification(AndroidNotification.newBuilder().setBuilderId(1).addExtras(extras).build()).build()
-                ).build();
-        return push(payload);
+        return push(createPushPayload(content, Audience.alias(aliasList), extras));
     }
 
     /**
@@ -129,15 +113,7 @@ public class JPushHelper {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(tagsList), "标签为空");
         Preconditions.checkArgument(tagsList.size() <= 1000, "标签不超过1000个");
         Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        PushPayload payload = PushPayload.newBuilder()
-                .setPlatform(Platform.all())
-                .setAudience(Audience.tag(tagsList))
-                .setOptions(Options.newBuilder().setApnsProduction(true).build())
-                .setNotification(Notification.newBuilder().setAlert(content)
-                        .addPlatformNotification(IosNotification.newBuilder().setSound("default").setBadge(1).addExtras(extras).build())
-                        .addPlatformNotification(AndroidNotification.newBuilder().setBuilderId(1).addExtras(extras).build()).build()
-                ).build();
-        return push(payload);
+        return push(createPushPayload(content, Audience.tag(tagsList), extras));
     }
 
     /**
@@ -149,15 +125,7 @@ public class JPushHelper {
      */
     public Long pushToAll(String content, Map<String, String> extras) {
         Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        PushPayload payload = PushPayload.newBuilder()
-                .setPlatform(Platform.all())
-                .setAudience(Audience.all())
-                .setOptions(Options.newBuilder().setApnsProduction(true).build())
-                .setNotification(Notification.newBuilder().setAlert(content)
-                        .addPlatformNotification(IosNotification.newBuilder().setSound("default").setBadge(1).addExtras(extras).build())
-                        .addPlatformNotification(AndroidNotification.newBuilder().setBuilderId(1).addExtras(extras).build()).build()
-                ).build();
-        return push(payload);
+        return push(createPushPayload(content, Audience.all(), extras));
     }
 
     /**
@@ -187,4 +155,14 @@ public class JPushHelper {
         return null;
     }
 
+    private PushPayload createPushPayload(String content, Audience audience, Map<String, String> extras) {
+        return PushPayload.newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(audience)
+                .setOptions(Options.newBuilder().setApnsProduction(true).build())
+                .setNotification(Notification.newBuilder().setAlert(content)
+                        .addPlatformNotification(IosNotification.newBuilder().setSound("default").setBadge(1).addExtras(extras).build())
+                        .addPlatformNotification(AndroidNotification.newBuilder().setBuilderId(1).addExtras(extras).build()).build()
+                ).build();
+    }
 }
