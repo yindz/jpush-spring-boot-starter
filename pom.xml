@@ -5,7 +5,7 @@
 
     <groupId>com.apifan.framework</groupId>
     <artifactId>jpush-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>jpush-spring-boot-starter</name>
     <description>简单易用的极光推送服务端辅助工具包。可直接快速集成到您的 SpringBoot 项目中。</description>
 
@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
-        <jpush-client.version>3.4.2</jpush-client.version>
+        <jpush-client.version>3.4.4</jpush-client.version>
         <guava.version>20.0</guava.version>
     </properties>
 

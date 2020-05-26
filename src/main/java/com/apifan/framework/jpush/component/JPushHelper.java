@@ -14,6 +14,7 @@ import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import com.apifan.framework.jpush.config.JPushProperties;
+import com.apifan.framework.jpush.vo.PushMessage;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 极光推送辅助工具
@@ -75,57 +75,49 @@ public class JPushHelper {
      * 根据设备ID推送
      *
      * @param deviceIdList 设备ID列表
-     * @param content      内容
-     * @param extras       附加参数
+     * @param pm           消息
      * @return 成功时返回消息ID
      */
-    public Long pushToDevices(List<String> deviceIdList, String content, Map<String, String> extras) {
+    public Long pushToDevices(List<String> deviceIdList, PushMessage pm) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(deviceIdList), "设备ID为空");
         Preconditions.checkArgument(deviceIdList.size() <= 1000, "设备ID不超过1000个");
-        Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        return push(createPushPayload(content, Audience.registrationId(deviceIdList), extras));
+        return push(createPushPayload(pm, Audience.registrationId(deviceIdList)));
     }
 
     /**
      * 根据别名推送
      *
      * @param aliasList 别名列表
-     * @param content   内容
-     * @param extras    附加参数
+     * @param pm        消息
      * @return 成功时返回消息ID
      */
-    public Long pushToAliases(List<String> aliasList, String content, Map<String, String> extras) {
+    public Long pushToAliases(List<String> aliasList, PushMessage pm) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(aliasList), "别名为空");
         Preconditions.checkArgument(aliasList.size() <= 1000, "别名不超过1000个");
-        Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        return push(createPushPayload(content, Audience.alias(aliasList), extras));
+        return push(createPushPayload(pm, Audience.alias(aliasList)));
     }
 
     /**
      * 根据标签推送
      *
      * @param tagsList 标签列表
-     * @param content  内容
-     * @param extras   附加参数
+     * @param pm       消息
      * @return 成功时返回消息ID
      */
-    public Long pushToTags(List<String> tagsList, String content, Map<String, String> extras) {
+    public Long pushToTags(List<String> tagsList, PushMessage pm) {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(tagsList), "标签为空");
         Preconditions.checkArgument(tagsList.size() <= 1000, "标签不超过1000个");
-        Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        return push(createPushPayload(content, Audience.tag(tagsList), extras));
+        return push(createPushPayload(pm, Audience.tag(tagsList)));
     }
 
     /**
      * 推送给所有客户端
      *
-     * @param content 内容
-     * @param extras  附加参数
+     * @param pm 消息
      * @return 成功时返回消息ID
      */
-    public Long pushToAll(String content, Map<String, String> extras) {
-        Preconditions.checkArgument(StringUtils.isNotEmpty(content), "消息为空");
-        return push(createPushPayload(content, Audience.all(), extras));
+    public Long pushToAll(PushMessage pm) {
+        return push(createPushPayload(pm, Audience.all()));
     }
 
     /**
@@ -135,6 +127,48 @@ public class JPushHelper {
      * @return 成功时返回消息ID
      */
     private Long push(PushPayload payload) {
+        if (jPushProperties.getRetryMaxAttempts() != null && jPushProperties.getRetryMaxAttempts() > 0) {
+            try {
+                return pushWithRetry(payload);
+            } catch (Exception e) {
+                logger.error("推送时发生异常", e);
+            }
+            return null;
+        } else {
+            return executePush(payload);
+        }
+    }
+
+    /**
+     * 进行推送(支持重试)
+     *
+     * @param payload 消息体
+     * @return 成功时返回消息ID
+     */
+    @SuppressWarnings("BusyWait")
+    private Long pushWithRetry(PushPayload payload) throws Exception {
+        Long msgId = executePush(payload);
+        if (msgId == null) {
+            long sleepTime = 1000L;
+            for (int i = 0; i < jPushProperties.getRetryMaxAttempts(); i++) {
+                Thread.sleep(sleepTime);
+                msgId = executePush(payload);
+                if (msgId != null) {
+                    break;
+                }
+                sleepTime *= 2;
+            }
+        }
+        return msgId;
+    }
+
+    /**
+     * 执行推送
+     *
+     * @param payload 消息体
+     * @return 成功时返回消息ID
+     */
+    private Long executePush(PushPayload payload) {
         logger.info("推送消息体: {}", payload.toJSON());
         try {
             PushResult result = jPushClient.sendPush(payload);
@@ -155,14 +189,16 @@ public class JPushHelper {
         return null;
     }
 
-    private PushPayload createPushPayload(String content, Audience audience, Map<String, String> extras) {
+    private PushPayload createPushPayload(PushMessage pm, Audience audience) {
+        Preconditions.checkArgument(pm != null, "消息为空");
+        Preconditions.checkArgument(StringUtils.isNotEmpty(pm.getContent()), "消息内容为空");
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(audience)
                 .setOptions(Options.newBuilder().setApnsProduction(true).build())
-                .setNotification(Notification.newBuilder().setAlert(content)
-                        .addPlatformNotification(IosNotification.newBuilder().setSound("default").setBadge(1).addExtras(extras).build())
-                        .addPlatformNotification(AndroidNotification.newBuilder().setBuilderId(1).addExtras(extras).build()).build()
+                .setNotification(Notification.newBuilder().setAlert(pm.getContent())
+                        .addPlatformNotification(IosNotification.newBuilder().setSound("default").setBadge(pm.getBadge() != null ? pm.getBadge() : 1).addExtras(pm.getExtras()).build())
+                        .addPlatformNotification(AndroidNotification.newBuilder().setBuilderId(1).addExtras(pm.getExtras()).build()).build()
                 ).build();
     }
 }

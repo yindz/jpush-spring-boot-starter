@@ -28,7 +28,7 @@ public class JPushAutoConfiguration {
     /**
      * 极光推送辅助工具
      *
-     * @return
+     * @return JPushHelper实例
      */
     @Bean
     public JPushHelper jPushHelper() {

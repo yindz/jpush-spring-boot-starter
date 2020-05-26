@@ -12,19 +12,45 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "jpush")
 public class JPushProperties {
 
+    /**
+     * masterSecret(从极光后台获得)
+     */
     private String masterSecret;
 
+    /**
+     * appKey(从极光后台获得)
+     */
     private String appKey;
 
+    /**
+     * 是否启用代理服务器
+     */
     private boolean useProxy = false;
 
+    /**
+     * 代理服务器主机名或IP
+     */
     private String proxyHost;
 
+    /**
+     * 代理服务器端口号
+     */
     private int proxyPort;
 
+    /**
+     * 代理服务器用户名
+     */
     private String proxyUsername;
 
+    /**
+     * 代理服务器密码
+     */
     private String proxyPassword;
+
+    /**
+     * 最大重试次数(0表示不重试)
+     */
+    private Integer retryMaxAttempts = 0;
 
     public String getMasterSecret() {
         return masterSecret;
@@ -80,5 +106,13 @@ public class JPushProperties {
 
     public void setProxyPassword(String proxyPassword) {
         this.proxyPassword = proxyPassword;
+    }
+
+    public Integer getRetryMaxAttempts() {
+        return retryMaxAttempts;
+    }
+
+    public void setRetryMaxAttempts(Integer retryMaxAttempts) {
+        this.retryMaxAttempts = retryMaxAttempts;
     }
 }

@@ -47,6 +47,12 @@ jpush:
   proxy-username: myproxy
   proxy-password: 123456
 ```
+### 开启重试
+可自行配置重试次数：
+```
+  retry-max-attempts: 3
+```
+默认值为0（不重试）。
 
 ## 使用范例
 ```
@@ -57,30 +63,36 @@ private JPushHelper jPushHelper;
 
 
 public void push(){
-    //消息内容    
-    String content = "这是一条测试消息！";
+    PushMessage pm = new PushMessage();
+
+    //消息内容
+    pm.setContent("这是一条测试消息！");
     
     //附加业务参数
     Map<String, String> extras = new HashMap<>();
     extras.put("bizCode", "123");
+    pm.setExtras(extras);
+
+    //指定角标值(仅在iOS设备生效)
+    pm.setBadge(8);
     
     //根据设备ID推送
     List<String> deviceIdList = new ArrayList<>();
     deviceIdList.add("asdfghjkl");
-    jPushHelper.pushToDevices(deviceIdList, content, extras);
+    jPushHelper.pushToDevices(deviceIdList, pm);
     
     //根据别名推送
     List<String> aliasList = new ArrayList<>();
     aliasList.add("poiuytreqw");
-    jPushHelper.pushToAliases(aliasList, content, extras);
+    jPushHelper.pushToAliases(aliasList, pm);
     
     //根据标签推送
     List<String> tagsList = new ArrayList<>();
     tagsList.add("test-tag1");
-    jPushHelper.pushToTags(tagsList, content, extras);
+    jPushHelper.pushToTags(tagsList, pm);
     
     //推送给全部客户端
-    jPushHelper.pushToAll(content, extras);    
+    jPushHelper.pushToAll(pm);
 }
 
 ```
