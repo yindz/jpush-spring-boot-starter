@@ -1,6 +1,6 @@
 package com.apifan.framework.jpush;
 
-import com.apifan.framework.jpush.component.JPushHelper;
+import com.apifan.framework.jpush.component.JPushApi;
 import com.apifan.framework.jpush.config.JPushProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,14 +26,14 @@ public class JPushAutoConfiguration {
     }
 
     /**
-     * 极光推送辅助工具
+     * 极光推送API辅助工具
      *
-     * @return JPushHelper实例
+     * @return JPushApi实例
      */
     @Bean
-    public JPushHelper jPushHelper() {
-        final JPushHelper helper = new JPushHelper(jPushProperties);
-        helper.init();
-        return helper;
+    public JPushApi jPushApi() {
+        final JPushApi jPushApi = new JPushApi(jPushProperties);
+        jPushApi.init();
+        return jPushApi;
     }
 }

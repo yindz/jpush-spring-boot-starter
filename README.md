@@ -48,16 +48,19 @@ jpush:
   proxy-password: 123456
 ```
 ### 开启重试
-可自行配置重试次数：
+可自行配置重试时间间隔和重试次数：
 ```
+  retry-interval: 1000
   retry-max-attempts: 3
 ```
-默认值为0（不重试）。
+说明：
+- retry-interval 表示第1次重试的时间间隔，单位为毫秒；如果 retry-max-attempts 值大于1，则从第2次重试开始，重试间隔时间逐次翻倍；
+- retry-max-attempts=0 时表示不做重试，默认值为0。
 
 ## 使用范例
 ```
 @Autowired
-private JPushHelper jPushHelper;
+private JPushApi jPushApi;
     
 //...
 
@@ -75,24 +78,27 @@ public void push(){
 
     //指定角标值(仅在iOS设备生效)
     pm.setBadge(8);
+
+    //指定优先级(仅在安卓设备生效)
+    pm.setPriority(1);
     
     //根据设备ID推送
     List<String> deviceIdList = new ArrayList<>();
     deviceIdList.add("asdfghjkl");
-    jPushHelper.pushToDevices(deviceIdList, pm);
+    Long msgId = jPushApi.pushToDevices(deviceIdList, pm);
     
     //根据别名推送
     List<String> aliasList = new ArrayList<>();
     aliasList.add("poiuytreqw");
-    jPushHelper.pushToAliases(aliasList, pm);
+    Long msgId = jPushApi.pushToAliases(aliasList, pm);
     
     //根据标签推送
     List<String> tagsList = new ArrayList<>();
     tagsList.add("test-tag1");
-    jPushHelper.pushToTags(tagsList, pm);
+    Long msgId = jPushApi.pushToTags(tagsList, pm);
     
     //推送给全部客户端
-    jPushHelper.pushToAll(pm);
+    Long msgId = jPushApi.pushToAll(pm);
 }
 
 ```

@@ -48,6 +48,11 @@ public class JPushProperties {
     private String proxyPassword;
 
     /**
+     * 重试时间间隔(毫秒)
+     */
+    private Long retryInterval = 500L;
+
+    /**
      * 最大重试次数(0表示不重试)
      */
     private Integer retryMaxAttempts = 0;
@@ -106,6 +111,14 @@ public class JPushProperties {
 
     public void setProxyPassword(String proxyPassword) {
         this.proxyPassword = proxyPassword;
+    }
+
+    public Long getRetryInterval() {
+        return retryInterval;
+    }
+
+    public void setRetryInterval(Long retryInterval) {
+        this.retryInterval = retryInterval;
     }
 
     public Integer getRetryMaxAttempts() {

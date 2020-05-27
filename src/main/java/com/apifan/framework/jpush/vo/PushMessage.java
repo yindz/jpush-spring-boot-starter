@@ -22,6 +22,11 @@ public class PushMessage implements Serializable {
     private Integer badge;
 
     /**
+     * 优先级
+     */
+    private Integer priority;
+
+    /**
      * 附加业务参数
      */
     private Map<String, String> extras;
@@ -42,6 +47,29 @@ public class PushMessage implements Serializable {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+    /**
+     * 获取 优先级
+     *
+     * @return priority 优先级
+     */
+    public Integer getPriority() {
+        return this.priority;
+    }
+
+    /**
+     * 设置 优先级
+     *
+     * @param priority 优先级
+     */
+    public void setPriority(Integer priority) {
+        if (priority != null) {
+            if (priority < -2 || priority > 2) {
+                throw new IllegalArgumentException("优先级的取值范围为 -2～2 之间");
+            }
+        }
+        this.priority = priority;
     }
 
     /**
