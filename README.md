@@ -1,21 +1,16 @@
 # 简单易用的极光推送服务端辅助工具包
 ## 概述
-包含极光推送工具服务端SDK一些常用的配置和逻辑。可直接快速集成到您的 SpringBoot 项目中。
-
-## 引入
-### 添加依赖
-暂时尚未进入maven中央仓库，因此请安装到本地仓库目录：
-```
-mvn install
-```
-引入依赖：
-```xml
-<dependency>
-    <groupId>com.apifan.framework</groupId>
-    <artifactId>jpush-spring-boot-starter</artifactId>
-    <version>1.0.1</version>
-</dependency>
-```
+包含极光推送工具服务端SDK一些常用的配置和逻辑。可直接快速集成到您的 SpringBoot 项目中。支持的功能包括：
+- 根据根据设备Registration ID推送
+- 根据别名推送
+- 根据标签推送
+- 推送给全部客户端设备
+- 查询指定别名下的设备Registration ID
+- 删除指定别名
+- 自定义代理服务器
+- 失败重试
+- 指定角标
+- 指定优先级
 
 ## 配置说明
 ### 默认
@@ -58,57 +53,69 @@ jpush:
 - retry-max-attempts=0 时表示不做重试，默认值为0。
 
 ## 使用范例
+### 引入依赖
+```xml
+<dependency>
+    <groupId>com.apifan.framework</groupId>
+    <artifactId>jpush-spring-boot-starter</artifactId>
+    <version>1.0.1</version>
+</dependency>
+```
+### 注入
 ```
 @Autowired
 private JPushApi jPushApi;
-    
-//...
+```    
+### 设置消息属性
+```
+PushMessage pm = new PushMessage();
 
+//消息内容
+pm.setContent("这是一条测试消息！");
 
-public void push(){
-    PushMessage pm = new PushMessage();
+//指定角标值(仅在iOS设备生效)
+pm.setBadge(8);
 
-    //消息内容
-    pm.setContent("这是一条测试消息！");
-    
-    //附加业务参数
-    Map<String, String> extras = new HashMap<>();
-    extras.put("bizCode", "123");
-    pm.setExtras(extras);
+//指定优先级(仅在安卓设备生效)
+pm.setPriority(1);
 
-    //指定角标值(仅在iOS设备生效)
-    pm.setBadge(8);
-
-    //指定优先级(仅在安卓设备生效)
-    pm.setPriority(1);
-    
-    //根据设备ID推送
-    List<String> deviceIdList = new ArrayList<>();
-    deviceIdList.add("asdfghjkl");
-    Long msgId = jPushApi.pushToDevices(deviceIdList, pm);
-    
-    //根据别名推送
-    List<String> aliasList = new ArrayList<>();
-    aliasList.add("poiuytreqw");
-    Long msgId = jPushApi.pushToAliases(aliasList, pm);
-    
-    //根据标签推送
-    List<String> tagsList = new ArrayList<>();
-    tagsList.add("test-tag1");
-    Long msgId = jPushApi.pushToTags(tagsList, pm);
-    
-    //推送给全部客户端
-    Long msgId = jPushApi.pushToAll(pm);
-
-    //查询指定别名下的设备Registration ID
-    List<String> regIdList = jPushApi.findRegistrationId("3ab016d0");
-
-    //删除别名
-    List<String> toDelete = new ArrayList<>();
-    toDelete.add("3ab016d0");
-    toDelete.add("7e9e2382");
-    toDelete.add("69f4e3e4");
-    jPushApi.deleteAlias(toDelete);
-}
-
+//附加业务参数
+Map<String, String> extras = new HashMap<>();
+extras.put("bizCode", "123");
+pm.setExtras(extras);
+```
+### 根据设备Registration ID推送
+```
+List<String> deviceIdList = new ArrayList<>();
+deviceIdList.add("asdfghjkl");
+deviceIdList.add("lkjhgfdsa");
+Long msgId = jPushApi.pushToDevices(deviceIdList, pm);
+```
+### 根据别名推送
+```
+List<String> aliasList = new ArrayList<>();
+aliasList.add("3ab016d0");
+aliasList.add("7e9e2382");
+Long msgId = jPushApi.pushToAliases(aliasList, pm);
+```
+### 根据标签推送
+```
+List<String> tagsList = new ArrayList<>();
+tagsList.add("test-tag1");
+Long msgId = jPushApi.pushToTags(tagsList, pm);
+```
+### 推送给全部客户端设备
+```
+Long msgId = jPushApi.pushToAll(pm);
+```
+### 查询指定别名下的设备Registration ID
+```
+List<String> regIdList = jPushApi.findRegistrationId("3ab016d0");
+```
+### 删除指定别名
+```
+List<String> toDelete = new ArrayList<>();
+toDelete.add("3ab016d0");
+toDelete.add("7e9e2382");
+jPushApi.deleteAlias(toDelete);
 ```
