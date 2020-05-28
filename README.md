@@ -99,6 +99,16 @@ public void push(){
     
     //推送给全部客户端
     Long msgId = jPushApi.pushToAll(pm);
+
+    //查询指定别名下的设备Registration ID
+    List<String> regIdList = jPushApi.findRegistrationId("3ab016d0");
+
+    //删除别名
+    List<String> toDelete = new ArrayList<>();
+    toDelete.add("3ab016d0");
+    toDelete.add("7e9e2382");
+    toDelete.add("69f4e3e4");
+    jPushApi.deleteAlias(toDelete);
 }
 
 ```

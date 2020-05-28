@@ -4,7 +4,9 @@ import cn.jiguang.common.ClientConfig;
 import cn.jiguang.common.connection.HttpProxy;
 import cn.jiguang.common.resp.APIConnectionException;
 import cn.jiguang.common.resp.APIRequestException;
+import cn.jiguang.common.resp.DefaultResult;
 import cn.jpush.api.JPushClient;
+import cn.jpush.api.device.AliasDeviceListResult;
 import cn.jpush.api.push.PushResult;
 import cn.jpush.api.push.model.Options;
 import cn.jpush.api.push.model.Platform;
@@ -70,14 +72,14 @@ public class JPushApi {
     /**
      * 根据设备ID推送
      *
-     * @param deviceIdList 设备ID列表
-     * @param pm           消息
+     * @param registrationIdList 设备Registration ID列表
+     * @param pm                 消息
      * @return 成功时返回消息ID
      */
-    public Long pushToDevices(List<String> deviceIdList, PushMessage pm) {
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(deviceIdList), "设备ID为空");
-        Preconditions.checkArgument(deviceIdList.size() <= 1000, "设备ID不超过1000个");
-        return push(createPushPayload(pm, Audience.registrationId(deviceIdList)));
+    public Long pushToDevices(List<String> registrationIdList, PushMessage pm) {
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(registrationIdList), "设备Registration ID为空");
+        Preconditions.checkArgument(registrationIdList.size() <= 1000, "设备Registration ID不超过1000个");
+        return push(createPushPayload(pm, Audience.registrationId(registrationIdList)));
     }
 
     /**
@@ -114,6 +116,50 @@ public class JPushApi {
      */
     public Long pushToAll(PushMessage pm) {
         return push(createPushPayload(pm, Audience.all()));
+    }
+
+    /**
+     * 查询指定别名下的设备Registration ID
+     *
+     * @param alias 待查询的别名
+     * @return 关联的设备Registration ID列表
+     */
+    public List<String> findRegistrationId(String alias) {
+        if (StringUtils.isEmpty(alias)) {
+            return null;
+        }
+        try {
+            AliasDeviceListResult result = jPushClient.getAliasDeviceList(alias, null);
+            if (result == null || 200 != result.getResponseCode()) {
+                return null;
+            }
+            return result.registration_ids;
+        } catch (APIConnectionException | APIRequestException e) {
+            logger.error("查询别名关联的设备时发生异常! alias:{}", alias, e);
+        }
+        return null;
+    }
+
+    /**
+     * 删除别名
+     *
+     * @param aliasList 待删除的别名列表
+     */
+    public void deleteAlias(List<String> aliasList) {
+        if (CollectionUtils.isEmpty(aliasList)) {
+            return;
+        }
+        aliasList.forEach(a -> {
+            if (StringUtils.isEmpty(a)) {
+                return;
+            }
+            try {
+                DefaultResult result = jPushClient.deleteAlias(a, null);
+                logger.info("删除别名接口返回码: {}, alias: {}", result != null ? result.getResponseCode() : null, a);
+            } catch (APIConnectionException | APIRequestException e) {
+                logger.error("删除别名时发生异常! alias:{}", a, e);
+            }
+        });
     }
 
     /**
