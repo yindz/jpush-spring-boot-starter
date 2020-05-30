@@ -6,8 +6,10 @@
     <groupId>com.apifan.framework</groupId>
     <artifactId>jpush-spring-boot-starter</artifactId>
     <version>1.0.1</version>
+    <packaging>jar</packaging>
     <name>jpush-spring-boot-starter</name>
     <description>简单易用的极光推送服务端辅助工具包。可直接快速集成到您的 SpringBoot 项目中。</description>
+    <url>https://github.com/yindz/jpush-spring-boot-starter</url>
 
     <properties>
         <java.version>1.8</java.version>
@@ -70,6 +72,87 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- GPG mvn clean deploy -P release -Dgpg.passphrase=YourPassphase -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Zhili Yin</name>
+            <email>yinzhili001@foxmail.com</email>
+            <organization>apifan</organization>
+            <url>https://github.com/yindz</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <tag>master</tag>
+        <url>https://github.com/yindz/jpush-spring-boot-starter</url>
+        <connection>scm:git:git@github.com:yindz/jpush-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:git@github.com:yindz/jpush-spring-boot-starter.git</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <name>OSS Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>oss</id>
+            <name>OSS Staging Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 </project>
