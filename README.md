@@ -1,4 +1,7 @@
-# 简单易用的极光推送服务端辅助工具包
+![http://www.opensource.org/licenses/mit-license.php](https://img.shields.io/badge/license-MIT-blue)
+![](https://img.shields.io/badge/java-1.8%2B-yellow)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.apifan.framework/jpush-spring-boot-starter/badge.svg "Maven Central")](https://search.maven.org/artifact/com.apifan.framework/jpush-spring-boot-starter/1.0.1/jar)
+# 极光推送服务端辅助工具包
 ## 概述
 包含极光推送工具服务端SDK一些常用的配置和逻辑。可直接快速集成到您的 SpringBoot 项目中。支持的功能包括：
 - 根据根据设备Registration ID推送
