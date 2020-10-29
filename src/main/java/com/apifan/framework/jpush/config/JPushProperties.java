@@ -1,14 +1,12 @@
 package com.apifan.framework.jpush.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * 极光推送参数
  *
  * @author yin
  */
-@Component
 @ConfigurationProperties(prefix = "jpush")
 public class JPushProperties {
 
