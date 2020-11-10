@@ -1,6 +1,6 @@
 ![http://www.opensource.org/licenses/mit-license.php](https://img.shields.io/badge/license-MIT-blue)
 ![](https://img.shields.io/badge/java-1.8%2B-yellow)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.apifan.framework/jpush-spring-boot-starter/badge.svg "Maven Central")](https://search.maven.org/artifact/com.apifan.framework/jpush-spring-boot-starter/1.0.1/jar)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.apifan.framework/jpush-spring-boot-starter/badge.svg "Maven Central")](https://search.maven.org/artifact/com.apifan.framework/jpush-spring-boot-starter/1.0.2/jar)
 # 极光推送服务端辅助工具包
 ## 概述
 包含极光推送工具服务端SDK一些常用的配置和逻辑。可直接快速集成到您的 SpringBoot 项目中。支持的功能包括：
@@ -65,7 +65,7 @@ jpush:
 <dependency>
     <groupId>com.apifan.framework</groupId>
     <artifactId>jpush-spring-boot-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 ### 注入
